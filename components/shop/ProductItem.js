@@ -16,7 +16,7 @@ const ProductItem = props => {
   if (Platform.OS === 'android' && Platform.Version >= 21) {
     TouchableCmp = TouchableNativeFeedback;
   }
-
+  
   return (
     <Cart style={styles.product}>
       <View style={styles.touchable}>
@@ -27,7 +27,7 @@ const ProductItem = props => {
             </View>
             <View style={styles.details}>
               <Text style={styles.title}>{props.title}</Text>
-              <Text style={styles.price}>${props.price.toFixed(2)}</Text>
+              <Text style={styles.price}>${+props.price.toFixed(2)}</Text>
             </View>
             <View style={styles.actions}>
               {props.children}
