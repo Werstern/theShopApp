@@ -16,6 +16,7 @@ import * as cartActions from '../../store/actions/cart';
 import * as productsActions from '../../store/actions/products';
 import HeaderButton from '../../components/UI/HeaderButton';
 import Colors from '../../constants/Color';
+import { addListener } from 'expo/build/Updates/Updates';
 
 const ProductsOverviewScreen = props => {
   const [isLoading, setIsLoading] = useState(false);
@@ -33,6 +34,14 @@ const ProductsOverviewScreen = props => {
     }
     setIsLoading(false);
   }, [dispatch, setIsLoading, setError]);
+
+  useEffect(() => {
+    const willFocusSub = props.navigation.addListener('willFocus', loadProducts);
+
+    return () => {
+      willFocusSub.remove();
+    };
+  }, [loadProducts]);
 
   useEffect(() => {
     loadProducts();
