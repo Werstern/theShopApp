@@ -6,7 +6,8 @@ export const UPDATE_PRODUCT = "UPDATE_PRODUCT";
 export const SET_PRODUCTS = "SET_PRODUCTS";
 
 export const fetchProducts = () => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const userId = getState().auth.userId;
     try {
       const response = await fetch(
         'https://shopapp-336dc.firebaseio.com/products.json'
@@ -33,7 +34,8 @@ export const fetchProducts = () => {
       }
       dispatch({ 
         type: SET_PRODUCTS, 
-        products: loadedProducts
+        products: loadedProducts,
+        userProducts: loadedProducts.filter(prod => prod.ownerId === userId)
       });
     } catch (err) {
       throw err;
@@ -42,9 +44,11 @@ export const fetchProducts = () => {
 };
 
 export const deleteProduct = productId => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const { token } = getState().auth;
+
     const response = await fetch(
-      `https://shopapp-336dc.firebaseio.com/products/${productId}.json`, 
+      `https://shopapp-336dc.firebaseio.com/products/${productId}.json?auth=${token}`, 
       {
         method: 'DELETE'
       }
@@ -62,8 +66,12 @@ export const deleteProduct = productId => {
 };
 
 export const createProduct = (title, description, imageUrl, price) => {
-  return async dispatch => {
-    const response = await fetch('https://shopapp-336dc.firebaseio.com/products.json', {
+  return async (dispatch, getState) => {
+    const { token } = getState().auth;
+    const userId = getState().auth.userId;
+    const response = await fetch(
+      `https://shopapp-336dc.firebaseio.com/products.json?auth=${token}`, 
+      {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -72,7 +80,8 @@ export const createProduct = (title, description, imageUrl, price) => {
         title,
         description,
         imageUrl,
-        price
+        price,
+        ownerId: userId
       })
     });
     const resData = await response.json();
@@ -84,7 +93,8 @@ export const createProduct = (title, description, imageUrl, price) => {
         title,
         description,
         imageUrl,
-        price
+        price,
+        ownerId: userId
       }
     });
   };
